@@ -1,0 +1,1 @@
+30 */3 * * * cd /data/wwwroot && python -Bm demo.bin.demo_request >> /tmp/req_demo/log  2>&1

@@ -4,6 +4,7 @@ import time
 import datetime
 import gzip
 import os
+import random
 # import sys
 # sys.path.append('./')
 # print(sys.path)
@@ -38,8 +39,15 @@ def yield_log(timestamp, region):
     # 文件列表
     s3_resource_summary = get_s3_bucket().objects.filter(Prefix=dir_name)
 
+    rate = 0
+    if len(s3_resource_summary) > 0:
+        rate = int(len(s3_resource_summary) / 20)
+
     # 循环每个文件内容
     for file_name in s3_resource_summary:
+        num = random.randint(0, rate)
+        if num > 0:
+            continue
         print(">>> read log in %s" % file_name.key)
         # 流式请求
         resp = get_s3_bucket().Object(file_name.key).get()

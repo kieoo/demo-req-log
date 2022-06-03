@@ -24,8 +24,9 @@ def get_s3_bucket(region=None):
         return boto3.resource('s3', region_name=region).Bucket(config.bucket_name)
 
 
-def yield_log(timestamp, region):
+def yield_log(timestamp, region, if_rate=False):
     """
+    :param if_rate: bool 抽样
     :param timestamp: int
     :param region: string
     :return:
@@ -40,7 +41,7 @@ def yield_log(timestamp, region):
     s3_resource_summary = get_s3_bucket().objects.filter(Prefix=dir_name)
 
     rate = 0
-    if len(s3_resource_summary) > 0:
+    if len(s3_resource_summary) > 0 and if_rate:
         rate = int(len(s3_resource_summary) / 20)
 
     # 循环每个文件内容
@@ -97,7 +98,7 @@ def up_resp(timestamp, region):
     global demo_up_resp_map
     global request_id_list
     # 只查找上游+resp的requesetId
-    for log in yield_log(timestamp, region):
+    for log in yield_log(timestamp, region, True):
         log_filed_v = log.split('\t')
         # 只有 上游的resp才放进来
         if len(log_filed_v) < 12:
